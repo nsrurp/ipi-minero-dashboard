@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IPI Minero Argentina — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+:root {
+  --bg:        #f4f6f9;
+  --bg2:       #ffffff;
+  --bg-card:   #ffffff;
+  --bg-card2:  #f0f3f7;
+  --border:    #dde2ea;
+  --border2:   #c8cfd9;
+  --text:      #1a2233;
+  --text2:     #4a5568;
+  --text3:     #8898aa;
+  --navy:      #1e3a5f;
+  --navy-mid:  #2d5986;
+  --navy-dim:  rgba(30,58,95,0.08);
+  --blue:      #2b6cb0;
+  --blue-light:#ebf4ff;
+  --green:     #276749;
+  --green-mid: #38a169;
+  --green-dim: rgba(39,103,73,0.08);
+  --amber:     #b7791f;
+  --amber-dim: rgba(183,121,31,0.10);
+  --red:       #c53030;
+  --red-dim:   rgba(197,48,48,0.08);
+  --copper:    #c05621;
+  --purple:    #553c9a;
+  --teal:      #2c7a7b;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:14px;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;min-height:100vh}
+
+/* HEADER */
+.header{
+  position:sticky;top:0;z-index:100;
+  background:#fff;border-bottom:1px solid var(--border);
+  height:60px;display:flex;align-items:center;
+  padding:0 24px;gap:16px;
+}
+.header-logo{
+  width:32px;height:32px;background:var(--navy);border-radius:6px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.header-logo svg{width:18px;height:18px;fill:#fff}
+.header-brand{display:flex;flex-direction:column;gap:1px}
+.header-title{font-size:15px;font-weight:700;color:var(--navy);line-height:1.2}
+.header-subtitle{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text2);line-height:1.2}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.period-group{display:flex;gap:4px;background:var(--bg-card2);border-radius:8px;padding:3px}
+.period-btn{
+  font-size:12px;font-weight:500;padding:5px 12px;border-radius:6px;
+  border:none;cursor:pointer;background:transparent;color:var(--text2);
+  font-family:'Space Grotesk',sans-serif;transition:all .15s;
+}
+.period-btn.active{background:var(--navy);color:#fff}
+.period-btn:not(.active):hover{background:var(--border);color:var(--text)}
+.export-btn{
+  font-size:12px;font-weight:500;padding:6px 14px;border-radius:7px;
+  border:1px solid var(--border);background:#fff;color:var(--text2);
+  cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:all .15s;
+}
+.export-btn:hover{border-color:var(--navy);color:var(--navy)}
+
+/* TABS NAV */
+.tabs-nav{
+  background:#fff;border-bottom:1px solid var(--border);
+  display:flex;padding:0 24px;gap:0;position:sticky;top:60px;z-index:99;
+}
+.tab-btn{
+  display:flex;align-items:center;gap:7px;
+  padding:14px 18px;font-size:13px;font-weight:500;
+  border:none;background:transparent;cursor:pointer;
+  color:var(--text2);border-bottom:2px solid transparent;
+  font-family:'Space Grotesk',sans-serif;transition:all .15s;
+  white-space:nowrap;
+}
+.tab-btn:hover{color:var(--navy)}
+.tab-btn.active{color:var(--navy);font-weight:600;border-bottom-color:var(--navy)}
+.tab-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* MAIN CONTENT */
+.main{padding:24px;max-width:1600px;margin:0 auto}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* KPI GRIDS */
+.kpi-grid-4{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;
+}
+.kpi-grid-3{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px;
+}
+.kpi-grid-2{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:18px;
+}
+.kpi-card{
+  background:#fff;border:1px solid var(--border);border-radius:10px;
+  overflow:hidden;position:relative;
+}
+.kpi-card-bar{height:3px;width:100%}
+.kpi-card-body{padding:16px 18px 18px}
+.kpi-label{font-size:11px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.kpi-value{font-size:26px;font-weight:700;color:var(--text);line-height:1.1;font-family:'JetBrains Mono',monospace;margin-bottom:4px}
+.kpi-sub{font-size:11.5px;color:var(--text3);margin-bottom:8px;line-height:1.4}
+.kpi-badge{
+  display:inline-flex;align-items:center;gap:3px;
+  font-size:11px;font-weight:600;font-family:'JetBrains Mono',monospace;
+  padding:3px 8px;border-radius:20px;
+}
+.badge-green{background:var(--green-dim);color:var(--green)}
+.badge-red{background:var(--red-dim);color:var(--red)}
+.badge-amber{background:var(--amber-dim);color:var(--amber)}
+.badge-blue{background:var(--blue-light);color:var(--blue)}
+.badge-navy{background:var(--navy-dim);color:var(--navy)}
+
+/* PRICE CARDS */
+.price-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.price-card{
+  background:#fff;border:1px solid var(--border);border-radius:10px;
+  padding:14px 16px;display:flex;flex-direction:column;gap:4px;
+}
+.price-mineral{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text2)}
+.price-val{font-size:18px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--text)}
+.price-unit{font-size:10.5px;color:var(--text3);margin-top:-2px}
+
+/* CHARTS */
+.charts-row-2{display:grid;grid-template-columns:3fr 2fr;gap:14px;margin-bottom:18px}
+.chart-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:20px}
+.chart-card-full{background:#fff;border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:18px}
+.chart-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.chart-sub{font-size:11px;color:var(--text3);margin-bottom:16px}
+.chart-wrap{position:relative}
+
+/* CONTEXT NOTE */
+.context-note{
+  border-radius:8px;padding:14px 18px;margin-bottom:18px;
+  font-size:12.5px;line-height:1.7;color:var(--text2);
+}
+.context-note.navy{background:var(--blue-light);border-left:3px solid var(--navy)}
+.context-note.teal{background:#f0faf8;border-left:3px solid var(--teal)}
+.context-note.amber{background:var(--amber-dim);border-left:3px solid var(--amber)}
+.context-note.purple{background:#faf5ff;border-left:3px solid var(--purple)}
+
+/* MAP TAB */
+.map-layout{
+  display:flex;height:calc(100vh - 125px);
+  border:1px solid var(--border);border-radius:10px;overflow:hidden;
+  background:#fff;
+}
+#leaflet-map{flex:1;min-width:0}
+.map-sidebar{
+  width:360px;flex-shrink:0;background:#fff;
+  border-left:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.sidebar-header{background:var(--navy);color:#fff;padding:16px}
+.sidebar-header h3{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px}
+.sidebar-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat-box{background:rgba(255,255,255,0.12);border-radius:8px;padding:10px 12px}
+.stat-box-val{font-size:22px;font-weight:700;font-family:'JetBrains Mono',monospace;line-height:1}
+.stat-box-lbl{font-size:10px;font-weight:500;opacity:.8;margin-top:3px;text-transform:uppercase;letter-spacing:.05em}
+.stat-box.green .stat-box-val{color:#68d391}
+.stat-box.amber .stat-box-val{color:#f6ad55}
+.stat-box.blue .stat-box-val{color:#90cdf4}
+.stat-box.white .stat-box-val{color:#fff}
+
+.sidebar-filters{padding:12px 14px;border-bottom:1px solid var(--border)}
+.filter-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:6px}
+.filter-pills{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.filter-pill{
+  font-size:11px;font-weight:500;padding:4px 10px;border-radius:20px;
+  border:1px solid var(--border);background:#fff;color:var(--text2);
+  cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:all .12s;
+}
+.filter-pill.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.filter-count{font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-top:4px}
+
+.proj-list{flex:1;overflow-y:auto;padding:8px 0}
+.proj-item{
+  display:flex;align-items:center;gap:10px;padding:9px 14px;
+  cursor:pointer;transition:background .12s;
+}
+.proj-item:hover{background:var(--bg)}
+.proj-item.active-item{background:var(--blue-light)}
+.proj-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.proj-info{flex:1;min-width:0}
+.proj-name{display:block;font-size:12.5px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.proj-loc{display:block;font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.proj-badge{
+  font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:4px;
+  text-transform:uppercase;letter-spacing:.04em;flex-shrink:0;
+  font-family:'JetBrains Mono',monospace;
+}
+.proj-badge.prod{background:var(--green-dim);color:var(--green)}
+.proj-badge.fact{background:var(--amber-dim);color:var(--amber)}
+.proj-badge.expl{background:var(--blue-light);color:var(--blue)}
+
+/* FOOTER */
+.footer-note{
+  font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text3);
+  text-align:right;margin-top:24px;padding-top:12px;
+  border-top:1px dashed var(--border);
+}
+
+/* LEAFLET POPUP OVERRIDE */
+.leaflet-popup-content-wrapper{
+  border-radius:10px!important;border:1px solid var(--border)!important;
+  box-shadow:0 4px 20px rgba(0,0,0,.12)!important;
+}
+.leaflet-popup-content{margin:14px 16px!important;min-width:200px}
+.popup-name{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px;font-family:'Space Grotesk',sans-serif}
+.popup-empresa{font-size:11.5px;color:var(--text2);margin-bottom:8px}
+.popup-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.popup-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:12px;font-family:'JetBrains Mono',monospace}
+.popup-inv{font-size:11.5px;color:var(--text2);margin-bottom:6px}
+.popup-det{font-size:11.5px;color:var(--text3);line-height:1.5}
+
+/* SCROLLBAR */
+.proj-list::-webkit-scrollbar{width:4px}
+.proj-list::-webkit-scrollbar-track{background:transparent}
+.proj-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+
+/* RESPONSIVE */
+@media(max-width:960px){
+  .map-layout{flex-direction:column}
+  .map-sidebar{width:100%;height:300px;border-left:none;border-top:1px solid var(--border)}
+  .charts-row-2{grid-template-columns:1fr}
+  .kpi-grid-4{grid-template-columns:repeat(2,1fr)}
+  .price-row{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:600px){
+  .kpi-grid-4{grid-template-columns:1fr}
+  .kpi-grid-3{grid-template-columns:1fr}
+  .price-row{grid-template-columns:1fr}
+  .header-subtitle{display:none}
+  .main{padding:14px}
+  .tabs-nav{padding:0 10px}
+  .tab-btn{padding:12px 10px;font-size:12px}
+}
+@media print{
+  .no-print{display:none!important}
+  .tab-panel{display:block!important;page-break-inside:avoid}
+  .map-layout{height:500px}
+  .header{position:relative}
+  .tabs-nav{position:relative}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header no-print">
+  <div class="header-logo">
+    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+  </div>
+  <div class="header-brand">
+    <div class="header-title">IPI Minero Argentina</div>
+    <div class="header-subtitle">INDEC — Base 2016=100 | Sector Minero</div>
+  </div>
+  <div class="header-right">
+    <div class="period-group">
+      <button class="period-btn" data-period="12" onclick="setPeriod(12)">Últ. 12m</button>
+      <button class="period-btn active" data-period="24" onclick="setPeriod(24)">Últ. 24m</button>
+      <button class="period-btn" data-period="0" onclick="setPeriod(0)">Todo</button>
+    </div>
+    <button class="export-btn" onclick="window.print()">Exportar / Imprimir</button>
+  </div>
+</header>
+
+<!-- TABS NAV -->
+<nav class="tabs-nav no-print">
+  <button class="tab-btn active" onclick="showTab(0)">
+    <span class="tab-dot" style="background:var(--navy)"></span>Vista General
+  </button>
+  <button class="tab-btn" onclick="showTab(1)">
+    <span class="tab-dot" style="background:var(--teal)"></span>Litio
+  </button>
+  <button class="tab-btn" onclick="showTab(2)">
+    <span class="tab-dot" style="background:var(--amber)"></span>Petróleo y Gas
+  </button>
+  <button class="tab-btn" onclick="showTab(3)">
+    <span class="tab-dot" style="background:var(--purple)"></span>Metalíferos
+  </button>
+  <button class="tab-btn" onclick="showTab(4)">
+    <span class="tab-dot" style="background:var(--green)"></span>Mapa de Proyectos
+  </button>
+</nav>
+
+<!-- ===== TAB 0 — VISTA GENERAL ===== -->
+<div class="tab-panel active" id="tab-0">
+<div class="main">
+
+  <!-- KPI Row 1 -->
+  <div class="kpi-grid-4">
+    <div class="kpi-card">
+      <div class="kpi-card-bar" style="background:var(--navy)"></div>
+      <div class="kpi-card-body">
+        <div class="kpi-label">IPI General</div>
+        <div class="kpi-value">140.1</div>
+        <div class="kpi-sub">IPI General — Ene 2026<br>Base 2016 = 100</div>
+        <span class="kpi-badge badge-green">▲ +5.4% i.a.</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-card-bar" style="background:var(--green)"></div>
+      <div class="kpi-card-body">
+        <div class="kpi-label">Exportaciones</div>
+        <div class="kpi-value" style="font-size:22px">USD 3.060M</div>
+        <div class="kpi-sub">Exportaciones 7M 2025<br>vs USD 2.206M en 7M 2024</div>
+        <span class="kpi-badge badge-green">▲ +38.7%</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-card-bar" style="background:var(--navy)"></div>
+      <div class="kpi-card-body">
+        <div class="kpi-label">Empleo</div>
+        <div class="kpi-value" style="font-size:22px">105.000</div>
+        <div class="kpi-sub">Puestos de trabajo 2024p<br>2,0% del empleo privado registrado</div>
+        <span class="kpi-badge badge-green">▲ récord</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-card-bar" style="background:var(--amber)"></div>
+      <div class="kpi-card-body">
+        <div class="kpi-label">Inversión 2025</div>
+        <div class="kpi-value" style="font-size:22px">USD 4.026M</div>
+        <div class="kpi-sub">Inversión proyectada 2025<br>vs USD 3.986M en 2024</div>
+        <span class="kpi-badge badge-green">▲ +1,0%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI Row 2 -->
+  <div class="kpi-grid-4">
+    <div class="kpi-card">
+      <div class="kpi-card-bar" style="background:var(--green)"></div>
+      <div class="kpi-card-body">
+        <div class="kpi-label">Balance Cambiario</div>
+        <div class="kpi-value" style="font-size:22px">USD 3.684M</div>
+        <div class="kpi-sub">Divisas ingresadas 7M 2025</div>
+        <span class="kpi-badge badge-green">▲ +82% i.a.</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-card-bar" style="background:var(--teal)"></div>
+      <div class="kpi-card-body">
+        <div class="kpi-label">Litio — Récord</div>
+        <div class="kpi-value" style="font-size:22px">12.967 t</div>
+        <div class="kpi-sub">Dic 2025 — máximo histórico</div>
+        <span class="kpi-badge badge-green">▲ +207% vs Feb 2024</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-card-bar" style="background:var(--amber)"></div>
+      <div class="kpi-card-body">
+        <div class="kpi-label">Petróleo</div>
+        <div class="kpi-value">173.7</div>
+        <div class="kpi-sub">Índice Petróleo Ene 2026</div>
+        <span class="kpi-badge badge-amber">Máximo histórico</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-card-bar" style="background:var(--navy)"></div>
+      <div class="kpi-card-body">
+        <div class="kpi-label">Aporte Tributario</div>
+        <div class="kpi-value" style="font-size:22px">ARS 1.205B</div>
+        <div class="kpi-sub">Contribución fiscal 2024</div>
+        <span class="kpi-badge badge-green">▲ +19% vs 2023</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Precios internacionales -->
+  <div class="price-row">
+    <div class="price-card">
+      <div class="price-mineral" style="color:var(--amber)">Oro</div>
+      <div class="price-val">USD 3.167</div>
+      <div class="price-unit">por onza troy</div>
+      <span class="kpi-badge badge-green" style="margin-top:6px">▲ +39.9% i.a.</span>
+    </div>
+    <div class="price-card">
+      <div class="price-mineral" style="color:var(--text3)">Plata</div>
+      <div class="price-val">USD 33.9</div>
+      <div class="price-unit">por onza troy</div>
+      <span class="kpi-badge badge-green" style="margin-top:6px">▲ +25.0% i.a.</span>
+    </div>
+    <div class="price-card">
+      <div class="price-mineral" style="color:var(--copper)">Cobre</div>
+      <div class="price-val">USD 10.430</div>
+      <div class="price-unit">por tonelada</div>
+      <span class="kpi-badge badge-green" style="margin-top:6px">▲ +11.3% i.a.</span>
+    </div>
+    <div class="price-card">
+      <div class="price-mineral" style="color:var(--teal)">Litio Carbonato</div>
+      <div class="price-val">USD 8.800</div>
+      <div class="price-unit">por tonelada</div>
+      <span class="kpi-badge badge-red" style="margin-top:6px">▼ -37.7% i.a.</span>
+    </div>
+  </div>
+
+  <!-- Charts row -->
+  <div class="charts-row-2">
+    <div class="chart-card">
+      <div class="chart-title">Evolución IPI Minero 2017–2026</div>
+      <div class="chart-sub">Índice de producción anual — Base 2016 = 100</div>
+      <div class="chart-wrap"><canvas id="chart-anual" height="280"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Subsectores — Ene 2026</div>
+      <div class="chart-sub">Índice por sector productivo</div>
+      <div class="chart-wrap"><canvas id="chart-subsectores" height="280"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Tendencia mensual -->
+  <div class="chart-card-full">
+    <div class="chart-title">Tendencia IPI General Mensual</div>
+    <div class="chart-sub">Feb 2024 — Ene 2026 | Filtrado por selector de período</div>
+    <div class="chart-wrap"><canvas id="chart-ipi-monthly" height="240"></canvas></div>
+  </div>
+
+  <div class="footer-note">Fuente: INDEC — IPI Minero, base 2016=100 &nbsp;|&nbsp; CAEM — Reporte Mensual Sectorial &nbsp;|&nbsp; Último dato: Enero 2026</div>
+</div>
+</div>
+
+<!-- ===== TAB 1 — LITIO ===== -->
+<div class="tab-panel" id="tab-1">
+<div class="main">
+
+  <div class="kpi-grid-3">
+    <div class="kpi-card">
+      <div class="kpi-card-bar" style="background:var(--teal)"></div>
+      <div class="kpi-card-body">
+        <div class="kpi-label">Producción Ene 2026</div>
+        <div class="kpi-value">11.876 t</div>
+        <div class="kpi-sub">Toneladas métricas — Enero 2026</div>
+        <span class="kpi-badge badge-green">▲ +53% vs Ene 2025</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-card-bar" style="background:var(--green)"></div>
+      <div class="kpi-card-body">
+        <div class="kpi-label">Pico Histórico</div>
+        <div class="kpi-value">12.967 t</div>
+        <div class="kpi-sub">Dic 2025 — récord absoluto</div>
+        <span class="kpi-badge badge-green">▲ Máximo histórico</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-card-bar" style="background:var(--navy)"></div>
+      <div class="kpi-card-body">
+        <div class="kpi-label">Crecimiento 2 años</div>
+        <div class="kpi-value">+207%</div>
+        <div class="kpi-sub">Feb 2024 → Ene 2026</div>
+        <span class="kpi-badge badge-green">▲ 2.° productor mundial</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-card-full">
+    <div class="chart-title">Producción Mensual de Litio — Toneladas Métricas</div>
+    <div class="chart-sub">Feb 2024 — Ene 2026 | Filtrado por selector de período</div>
+    <div class="chart-wrap"><canvas id="chart-litio" height="320"></canvas></div>
+  </div>
+
+  <div class="context-note teal">
+    <strong>Argentina — 2.° productor mundial de litio.</strong> El índice IPI litio pasó de 163 (feb 2024) a 396 (ene 2026), un crecimiento del <strong>+143%</strong> en 2 años. La producción mensual acumula 9 meses consecutivos por encima de las 7.000 toneladas. Los proyectos Olaroz, Cauchari-Olaroz, Centenario-Ratones, Mariana y Fénix consolidan al país en el "Triángulo del Litio" junto a Chile y Bolivia.
+  </div>
+
+  <div class="footer-note">Fuente: INDEC — IPI Minero, base 2016=100 &nbsp;|&nbsp; CAEM — Reporte Mensual Sectorial &nbsp;|&nbsp; Último dato: Enero 2026</div>
+</div>
+</div>
+
+<!-- ===== TAB 2 — PETRÓLEO Y GAS ===== -->
+<div class="tab-panel" id="tab-2">
+<div class="main">
+
+  <div class="kpi-grid-3">
+    <div class="kpi-card">
+      <div class="kpi-card-bar" style="background:var(--amber)"></div>
+      <div class="kpi-card-body">
+        <div class="kpi-label">Petróleo Ene 2026</div>
+        <div class="kpi-value">173.7</div>
+        <div class="kpi-sub">Máximo histórico — Vaca Muerta</div>
+        <span class="kpi-badge badge-amber">▲ Récord absoluto</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-card-bar" style="background:var(--blue)"></div>
+      <div class="kpi-card-body">
+        <div class="kpi-label">Gas Ene 2026</div>
+        <div class="kpi-value">108.9</div>
+        <div class="kpi-sub">Comportamiento estacional</div>
+        <span class="kpi-badge badge-blue">Pico verano</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-card-bar" style="background:var(--navy)"></div>
+      <div class="kpi-card-body">
+        <div class="kpi-label">Precio Oro (ref.)</div>
+        <div class="kpi-value" style="font-size:22px">USD 3.167</div>
+        <div class="kpi-sub">por onza troy — impacto exportaciones</div>
+        <span class="kpi-badge badge-green">▲ +39.9% i.a.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-card-full">
+    <div class="chart-title">Índice Petróleo vs Gas Natural</div>
+    <div class="chart-sub">Feb 2024 — Ene 2026 | Base 2016 = 100</div>
+    <div class="chart-wrap"><canvas id="chart-petrol" height="320"></canvas></div>
+  </div>
+
+  <div class="context-note amber">
+    <strong>Petróleo en máximo histórico</strong> impulsado por el desarrollo sostenido de <strong>Vaca Muerta</strong>. El índice supera en un <strong>74%</strong> la base 2016. Gas con comportamiento estacional marcado: picos en invierno (jun–ago), oscilando entre 100 y 122 puntos. La integración energética y los gasoductos de exportación son factores clave para el crecimiento sostenido del sector.
+  </div>
+
+  <div class="footer-note">Fuente: INDEC — IPI Minero, base 2016=100 &nbsp;|&nbsp; CAEM — Reporte Mensual Sectorial &nbsp;|&nbsp; Último dato: Enero 2026</div>
+</div>
+</div>
+
+<!-- ===== TAB 3 — METALÍFEROS ===== -->
+<div class="tab-panel" id="tab-3">
+<div class="main">
+
+  <div class="kpi-grid-2">
+    <div class="kpi-card">
+      <div class="kpi-card-bar" style="background:var(--purple)"></div>
+      <div class="kpi-card-body">
+        <div class="kpi-label">Metalíferos Ene 2026</div>
+        <div class="kpi-value">49.8</div>
+        <div class="kpi-sub">Operando bajo base 2016 = 100</div>
+        <span class="kpi-badge badge-amber">▼ bajo nivel histórico</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-card-bar" style="background:var(--navy-mid)"></div>
+      <div class="kpi-card-body">
+        <div class="kpi-label">Plata y Oro Ene 2026</div>
+        <div class="kpi-value">121.8</div>
+        <div class="kpi-sub">vs pico 144.8 (Ago 2025)</div>
+        <span class="kpi-badge badge-red">▼ -15.8% vs pico</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-card-full">
+    <div class="chart-title">Metalíferos y Plata/Oro</div>
+    <div class="chart-sub">Feb 2024 — Ene 2026 | Base 2016 = 100</div>
+    <div class="chart-wrap"><canvas id="chart-metalif" height="320"></canvas></div>
+  </div>
+
+  <div class="context-note purple">
+    El sector metalífero general opera por <strong>debajo de la base 2016</strong> (49.8 en ene 2026), reflejando la madurez de yacimientos existentes. Plata y Oro muestra mejor desempeño (121.8), aunque con retroceso desde el pico de 144.8 de ago 2025. Existe potencial de crecimiento significativo ante nuevos proyectos habilitados bajo el <strong>Régimen de Incentivo a las Grandes Inversiones (RIGI)</strong>, incluyendo Josemaría, Filo del Sol, Los Azules y MARA.
+  </div>
+
+  <div class="footer-note">Fuente: INDEC — IPI Minero, base 2016=100 &nbsp;|&nbsp; CAEM — Reporte Mensual Sectorial &nbsp;|&nbsp; Último dato: Enero 2026</div>
+</div>
+</div>
+
+<!-- ===== TAB 4 — MAPA ===== -->
+<div class="tab-panel" id="tab-4">
+<div class="main" style="padding-bottom:0">
+  <div class="map-layout">
+    <div id="leaflet-map"></div>
+    <div class="map-sidebar">
+      <div class="sidebar-header">
+        <h3>Proyectos Mineros Argentina</h3>
+        <div class="sidebar-stats">
+          <div class="stat-box green"><div class="stat-box-val">22</div><div class="stat-box-lbl">En producción</div></div>
+          <div class="stat-box amber"><div class="stat-box-val">14</div><div class="stat-box-lbl">En desarrollo</div></div>
+          <div class="stat-box blue"><div class="stat-box-val">12</div><div class="stat-box-lbl">En exploración</div></div>
+          <div class="stat-box white"><div class="stat-box-val">48</div><div class="stat-box-lbl">Total</div></div>
+        </div>
+      </div>
+      <div class="sidebar-filters">
+        <div class="filter-label">Filtrar por mineral</div>
+        <div class="filter-pills" id="filter-mineral">
+          <button class="filter-pill active" data-mineral="Todos">Todos</button>
+          <button class="filter-pill" data-mineral="Litio">Litio</button>
+          <button class="filter-pill" data-mineral="Oro">Oro</button>
+          <button class="filter-pill" data-mineral="Cobre">Cobre</button>
+          <button class="filter-pill" data-mineral="Plata">Plata</button>
+          <button class="filter-pill" data-mineral="Otros">Otros</button>
+        </div>
+        <div class="filter-label">Filtrar por estado</div>
+        <div class="filter-pills" id="filter-status">
+          <button class="filter-pill active" data-status="produccion">Producción</button>
+          <button class="filter-pill active" data-status="factibilidad">Factibilidad</button>
+          <button class="filter-pill active" data-status="exploracion">Exploración</button>
+        </div>
+        <div class="filter-count" id="filter-count">Mostrando 48 de 48 proyectos</div>
+      </div>
+      <div class="proj-list" id="proj-list"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+/* ============================================================
+   DATA
+============================================================ */
+const ALL_MONTHS = [
+  "Feb 2024","Mar 2024","Abr 2024","May 2024","Jun 2024","Jul 2024",
+  "Ago 2024","Sep 2024","Oct 2024","Nov 2024","Dic 2024","Ene 2025",
+  "Feb 2025","Mar 2025","Abr 2025","May 2025","Jun 2025","Jul 2025",
+  "Ago 2025","Sep 2025","Oct 2025","Nov 2025","Dic 2025","Ene 2026"
+];
+const IPI_GENERAL = [123.4,129.8,128.7,134.1,125.1,130.6,132.7,133.7,135.4,130.9,135.3,133.0,125.2,132.7,130.3,134.5,133.8,140.8,138.2,136.6,140.5,133.2,141.5,140.1];
+const IPI_VAR     = [13.8,5.4,10.1,8.8,3.4,4.8,2.2,4.7,4.7,4.1,0.3,2.9,1.5,2.2,1.3,0.3,6.9,7.8,4.2,2.2,3.8,1.8,4.6,5.4];
+const PETROLEO    = [124.9,126.8,128.3,131.2,132.4,134.8,137.1,139.6,141.8,144.2,146.5,148.7,151.2,153.6,155.3,157.8,160.2,162.5,164.1,166.8,169.4,170.9,172.3,173.7];
+const GAS         = [103.7,102.4,103.8,106.5,111.8,119.3,116.7,109.2,104.1,101.5,102.8,104.2,101.8,103.4,107.2,111.4,116.8,121.5,117.3,109.8,102.5,104.1,107.6,108.9];
+const METALIFEROS = [49.8,51.4,53.1,54.8,53.2,54.6,55.8,57.2,57.9,58.4,57.1,55.3,53.8,55.2,56.4,57.8,59.2,59.8,58.6,57.9,57.2,54.8,52.3,49.8];
+const PLATA_ORO   = [118.9,121.8,124.3,127.1,125.4,127.8,129.6,132.1,134.5,136.8,137.4,135.2,133.4,136.1,138.3,140.2,142.1,144.5,144.8,143.6,141.6,136.9,130.2,121.8];
+const LITIO_IDX   = [163.1,177.2,169.8,174.5,199.4,185.6,208.3,224.7,238.1,245.6,266.8,276.4,269.8,272.5,265.3,285.4,277.9,297.3,293.1,342.5,391.0,414.5,463.8,396.5];
+const LITIO_TONS  = [3869,4806,3803,3983,6069,4991,5722,6396,6862,6759,7502,7793,7467,7371,7147,7965,7536,8137,7892,9202,10709,11244,12967,11876];
+const IPI_ANUAL_YEARS = [2017,2018,2019,2020,2021,2022,2023,2024,2025,"2026*"];
+const IPI_ANUAL_VALS  = [100.0,104.4,107.3,87.9,99.2,112.1,123.5,130.7,135.0,140.1];
+
+const PROJECTS = [
+  {id:1,  name:"Olaroz",              mineral:"Litio",      empresa:"Rio Tinto / Lithium Americas", provincia:"Jujuy",      status:"produccion", lat:-23.48,lng:-66.65, inv:"USD 570M",   det:"Primer productor de carbonato de litio grado batería de Argentina. Capacidad: 25.000 t/año."},
+  {id:2,  name:"Cauchari-Olaroz",     mineral:"Litio",      empresa:"Ganfeng / Lithium Americas",   provincia:"Jujuy",      status:"produccion", lat:-23.55,lng:-66.58, inv:"USD 600M",   det:"En rampa de producción. Capacidad objetivo: 40.000 t/año de carbonato de litio."},
+  {id:3,  name:"Providencia",         mineral:"Plata",      empresa:"Hanaq Group",                  provincia:"Jujuy",      status:"produccion", lat:-22.45,lng:-65.88, inv:"",           det:"Yacimiento de plata en operación en la Puna jujeña."},
+  {id:4,  name:"Chinchillas",         mineral:"Plata",      empresa:"SSR Mining",                   provincia:"Jujuy",      status:"produccion", lat:-22.70,lng:-66.15, inv:"",           det:"Mina polimetálica de plata, plomo y zinc."},
+  {id:5,  name:"Aguilar",             mineral:"Plomo/Zinc", empresa:"Cía. Minera Aguilar",          provincia:"Jujuy",      status:"produccion", lat:-23.18,lng:-65.72, inv:"",           det:"Producción de plomo y zinc. Operación histórica en la Puna jujeña."},
+  {id:6,  name:"Lindero",             mineral:"Oro",        empresa:"Mansfield Minera",             provincia:"Salta",      status:"produccion", lat:-26.52,lng:-68.15, inv:"USD 280M",   det:"Producción: ~120.000 oz Au/año. Open pit de alta montaña."},
+  {id:7,  name:"Centenario-Ratones",  mineral:"Litio",      empresa:"Eramet",                       provincia:"Salta",      status:"produccion", lat:-24.85,lng:-66.80, inv:"USD 800M",   det:"En rampa de producción. Capacidad: 24.000 t/año de carbonato de litio."},
+  {id:8,  name:"Mariana",             mineral:"Litio",      empresa:"Ganfeng Lithium",              provincia:"Salta",      status:"produccion", lat:-24.98,lng:-67.65, inv:"",           det:"Producción de litio en el Salar Llullaillaco."},
+  {id:9,  name:"Sal de Oro",          mineral:"Litio",      empresa:"POSCO / Litio Minera Arg.",    provincia:"Salta",      status:"produccion", lat:-24.50,lng:-67.10, inv:"USD 830M",   det:"Producción de hidróxido y carbonato de litio."},
+  {id:10, name:"Fénix",               mineral:"Litio",      empresa:"Rio Tinto / POSCO",            provincia:"Catamarca",  status:"produccion", lat:-26.05,lng:-67.02, inv:"USD 1.200M", det:"Principal yacimiento de litio de Catamarca. Salar del Hombre Muerto."},
+  {id:11, name:"Farallón Negro",      mineral:"Oro",        empresa:"YMAD",                         provincia:"Catamarca",  status:"produccion", lat:-27.25,lng:-66.75, inv:"",           det:"Complejo minero estatal. Oro y polimetálico."},
+  {id:12, name:"Tres Quebradas",      mineral:"Litio",      empresa:"Zijin Mining",                 provincia:"Catamarca",  status:"produccion", lat:-27.05,lng:-67.22, inv:"USD 380M",   det:"Salar Tres Quebradas. En producción desde 2024."},
+  {id:13, name:"Veladero",            mineral:"Oro",        empresa:"Barrick Gold",                 provincia:"San Juan",   status:"produccion", lat:-29.52,lng:-69.58, inv:"",           det:"Mayor mina de oro de San Juan. ~400.000 oz Au/año. Open pit de alta montaña."},
+  {id:14, name:"Gualcamayo",          mineral:"Oro",        empresa:"Mineros SA",                   provincia:"San Juan",   status:"produccion", lat:-29.85,lng:-68.50, inv:"",           det:"Mina de oro a cielo abierto."},
+  {id:15, name:"Casposo",             mineral:"Cobre/Oro",  empresa:"Austral Gold",                 provincia:"San Juan",   status:"produccion", lat:-30.02,lng:-69.05, inv:"",           det:"Yacimiento de cobre y oro."},
+  {id:16, name:"Cerro Negro",         mineral:"Oro",        empresa:"Newmont",                      provincia:"Santa Cruz",  status:"produccion", lat:-47.52,lng:-66.82, inv:"USD 1.500M", det:"Mayor exportador minero de Argentina. ~600.000 oz Au/año."},
+  {id:17, name:"Cerro Vanguardia",    mineral:"Oro/Plata",  empresa:"AngloGold Ashanti",            provincia:"Santa Cruz",  status:"produccion", lat:-47.62,lng:-67.38, inv:"",           det:"Producción de oro y plata. Operación epitermal."},
+  {id:18, name:"Cerro Moro",          mineral:"Oro/Plata",  empresa:"Coeur Mining",                 provincia:"Santa Cruz",  status:"produccion", lat:-47.35,lng:-66.52, inv:"USD 420M",   det:"Mina subterránea de oro y plata de alta ley."},
+  {id:19, name:"Don Nicolás",         mineral:"Oro/Plata",  empresa:"Cerrado Gold",                 provincia:"Santa Cruz",  status:"produccion", lat:-47.82,lng:-65.52, inv:"",           det:"Operación de oro y plata en Santa Cruz."},
+  {id:20, name:"San José",            mineral:"Oro/Plata",  empresa:"Hochschild Mining",            provincia:"Santa Cruz",  status:"produccion", lat:-48.08,lng:-66.02, inv:"",           det:"Mina subterránea polimetálica."},
+  {id:21, name:"Manantial Espejo",    mineral:"Plata/Oro",  empresa:"Pan American Silver",          provincia:"Santa Cruz",  status:"produccion", lat:-47.85,lng:-65.85, inv:"",           det:"Mina epitermal de plata y oro."},
+  {id:22, name:"Mina Martha",         mineral:"Plata",      empresa:"Patagonia Gold",               provincia:"Santa Cruz",  status:"produccion", lat:-48.15,lng:-67.02, inv:"",           det:"Histórica mina de plata."},
+  {id:23, name:"Río Turbio",          mineral:"Carbón",     empresa:"YCRT (estatal)",               provincia:"Santa Cruz",  status:"produccion", lat:-51.55,lng:-72.32, inv:"",           det:"Único yacimiento de carbón en producción de Argentina."},
+  {id:24, name:"Salar del Rincón",    mineral:"Litio",      empresa:"Rio Tinto",                    provincia:"Salta",      status:"factibilidad", lat:-23.68,lng:-67.35, inv:"USD 2.500M", det:"Proyecto de litio de clase mundial. Estudio de factibilidad definitivo completado."},
+  {id:25, name:"Rincón (Argosy)",     mineral:"Litio",      empresa:"Argosy Minerals",              provincia:"Salta",      status:"factibilidad", lat:-23.72,lng:-67.30, inv:"USD 380M",   det:"Planta piloto operativa. Ramp up hacia producción comercial."},
+  {id:26, name:"Taca Taca",           mineral:"Cobre",      empresa:"First Quantum Minerals",       provincia:"Salta",      status:"factibilidad", lat:-24.28,lng:-67.52, inv:"USD 4.500M", det:"Uno de los mayores depósitos de cobre de Argentina. Potencial 200.000 t Cu/año."},
+  {id:27, name:"Pastos Grandes",      mineral:"Litio",      empresa:"Lithium Americas",             provincia:"Salta",      status:"factibilidad", lat:-24.62,lng:-66.95, inv:"USD 380M",   det:"Salar Pastos Grandes. Estudio de factibilidad definitivo."},
+  {id:28, name:"Diablillos",          mineral:"Plata/Oro",  empresa:"AbraSilver",                   provincia:"Salta",      status:"factibilidad", lat:-25.02,lng:-67.82, inv:"USD 420M",   det:"Depósito epitermal de plata y oro."},
+  {id:29, name:"MARA",                mineral:"Cobre",      empresa:"Glencore",                     provincia:"Catamarca",  status:"factibilidad", lat:-27.82,lng:-68.02, inv:"USD 5.000M", det:"Uno de los proyectos de cobre más grandes del mundo. Glencore + Newmont."},
+  {id:30, name:"Sal de Vida",         mineral:"Litio",      empresa:"Rio Tinto",                    provincia:"Catamarca",  status:"factibilidad", lat:-26.32,lng:-67.08, inv:"USD 825M",   det:"Salar del Hombre Muerto. Capacidad: 32.000 t/año de carbonato de litio."},
+  {id:31, name:"Josemaría",           mineral:"Cobre/Oro",  empresa:"Lundin Mining / BHP",          provincia:"San Juan",   status:"factibilidad", lat:-29.02,lng:-69.85, inv:"USD 4.300M", det:"Megaproyecto cobre-oro bajo RIGI. Potencial: 130.000 t Cu/año."},
+  {id:32, name:"Los Azules",          mineral:"Cobre",      empresa:"McEwen Copper",                provincia:"San Juan",   status:"factibilidad", lat:-31.05,lng:-70.22, inv:"USD 2.500M", det:"Importante proyecto de cobre en alta cordillera. Potencial: 170.000 t Cu/año."},
+  {id:33, name:"El Pachón",           mineral:"Cobre",      empresa:"Glencore",                     provincia:"San Juan",   status:"factibilidad", lat:-30.52,lng:-70.48, inv:"USD 3.000M", det:"Pórfido de cobre. Estudio de factibilidad avanzado."},
+  {id:34, name:"Filo del Sol",        mineral:"Cobre/Oro",  empresa:"Filo Corp / BHP / Lundin",     provincia:"San Juan",   status:"factibilidad", lat:-28.98,lng:-69.78, inv:"USD 6.000M+", det:"Megaproyecto limítrofe Argentina-Chile. Cobre, oro y plata."},
+  {id:35, name:"Hualilán",            mineral:"Oro",        empresa:"Challenger Gold",              provincia:"San Juan",   status:"factibilidad", lat:-30.45,lng:-69.02, inv:"",           det:"Proyecto epitermal de oro y plata en el Valle Fértil."},
+  {id:36, name:"Vicuña",              mineral:"Cobre",      empresa:"Lundin Mining",                provincia:"San Juan",   status:"factibilidad", lat:-29.48,lng:-70.02, inv:"",           det:"Pórfido de cobre. Parte del Distrito Vicuña."},
+  {id:37, name:"Don Sixto",           mineral:"Oro",        empresa:"AURA Minerals",                provincia:"Mendoza",    status:"factibilidad", lat:-35.52,lng:-69.52, inv:"USD 350M",   det:"Proyecto de oro en el sur mendocino."},
+  {id:38, name:"Navidad",             mineral:"Plata",      empresa:"Pan American Silver",          provincia:"Chubut",     status:"exploracion", lat:-42.52,lng:-66.52, inv:"USD 1.000M+", det:"Uno de los mayores depósitos de plata no desarrollados del mundo. Pendiente aprobación provincial."},
+  {id:39, name:"Joaquín",             mineral:"Plata/Oro",  empresa:"Unico Silver",                 provincia:"Santa Cruz",  status:"exploracion", lat:-48.52,lng:-67.52, inv:"",           det:"Campaña de perforación activa 2025/2026. +30.000 metros perforados."},
+  {id:40, name:"Pingüino",            mineral:"Plata/Zinc", empresa:"",                             provincia:"Santa Cruz",  status:"exploracion", lat:-48.02,lng:-67.02, inv:"",           det:"Proyecto de plata y zinc. Exploración avanzada."},
+  {id:41, name:"Potasio Río Colorado",mineral:"Potasio",    empresa:"Vale",                         provincia:"Mendoza",    status:"exploracion", lat:-38.02,lng:-69.02, inv:"USD 5.900M", det:"Enorme depósito de potasio. Proyecto en revisión."},
+  {id:42, name:"Kachi",               mineral:"Litio",      empresa:"Lake Resources",               provincia:"Catamarca",  status:"exploracion", lat:-27.52,lng:-67.52, inv:"USD 1.150M", det:"Tecnología DLE. Estudio de factibilidad definitivo actualizado 2025."},
+  {id:43, name:"Suyai",               mineral:"Oro",        empresa:"Agnico Eagle / AEM",           provincia:"Río Negro",  status:"exploracion", lat:-41.32,lng:-71.52, inv:"",           det:"Proyecto epitermal subterráneo de oro y plata en la Patagonia andina."},
+  {id:44, name:"Calcatreu",           mineral:"Oro/Plata",  empresa:"",                             provincia:"Río Negro",  status:"exploracion", lat:-40.82,lng:-68.52, inv:"",           det:"Depósito epitermal de oro y plata."},
+  {id:45, name:"Lunahuasi",           mineral:"Cobre/Oro",  empresa:"NGEx Minerals",                provincia:"San Juan",   status:"exploracion", lat:-29.85,lng:-69.72, inv:"",           det:"Sistema de pórfido de gran escala. 25.003 m perforados en fase 3 (2025)."},
+  {id:46, name:"Sierra Pintada",      mineral:"Uranio",     empresa:"CNEA",                         provincia:"Mendoza",    status:"exploracion", lat:-35.22,lng:-68.22, inv:"",           det:"Principal depósito de uranio de Argentina. Empresa estatal CNEA."},
+  {id:47, name:"Amarillo Grande",     mineral:"Uranio",     empresa:"Corp. Minera Neuquén",         provincia:"Río Negro",  status:"exploracion", lat:-41.02,lng:-66.52, inv:"",           det:"Proyecto de uranio en la meseta rionegrina."},
+  {id:48, name:"Altar",               mineral:"Cobre",      empresa:"Aldebaran Resources",          provincia:"San Juan",   status:"exploracion", lat:-25.52,lng:-68.02, inv:"",           det:"Pórfido de cobre con oro y molibdeno."},
+];
+
+const MINERAL_COLORS = {
+  "Litio":      "#2c7a7b",
+  "Oro":        "#b7791f",
+  "Oro/Plata":  "#b7791f",
+  "Plata/Oro":  "#b7791f",
+  "Cobre":      "#c05621",
+  "Cobre/Oro":  "#c05621",
+  "Plata":      "#553c9a",
+  "Plata/Zinc": "#553c9a",
+  "Carbón":     "#4a5568",
+  "Uranio":     "#276749",
+  "Potasio":    "#2b6cb0",
+  "Plomo/Zinc": "#4a5568",
+};
+function mineralColor(m){ return MINERAL_COLORS[m] || '#1e3a5f'; }
+
+/* ============================================================
+   CHART.JS GLOBAL CONFIG
+============================================================ */
+Chart.defaults.color = '#4a5568';
+Chart.defaults.borderColor = '#e2e8f0';
+Chart.defaults.font.family = "'Space Grotesk', sans-serif";
+Chart.defaults.font.size = 12;
+
+const tooltipConfig = {
+  backgroundColor: '#1a2233',
+  borderColor: '#2d5986',
+  borderWidth: 1,
+  titleColor: '#ffffff',
+  bodyColor: '#cbd5e0',
+  padding: 12,
+  cornerRadius: 8,
+  displayColors: true,
+};
+
+function makeGradient(ctx, color, alpha=0.15){
+  const g = ctx.createLinearGradient(0,0,0,300);
+  const hi = '#' + Math.round(alpha*255).toString(16).padStart(2,'0');
+  g.addColorStop(0, color + Math.round(alpha*255).toString(16).padStart(2,'0'));
+  g.addColorStop(1, color + '05');
+  return g;
+}
+
+function refLine(n){
+  return {
+    label:'Base 2016',
+    data:Array(n).fill(100),
+    borderColor:'rgba(160,174,192,0.5)',
+    borderDash:[4,4],
+    borderWidth:1,
+    pointRadius:0,
+    fill:false,
+    tension:0,
+  };
+}
+
+/* ============================================================
+   PERIOD STATE
+============================================================ */
+let currentPeriod = 24;
+const charts = {};
+const tabInited = {};
+
+function getSlice(arr){
+  if(currentPeriod === 0) return arr;
+  return arr.slice(-currentPeriod);
+}
+
+function setPeriod(p){
+  currentPeriod = p;
+  document.querySelectorAll('.period-btn').forEach(b=>{
+    const bp = b.dataset.period;
+    b.classList.toggle('active', (bp === String(p)) || (p===0 && bp==='0'));
+  });
+  updateMonthlyCharts();
+}
+
+function updateMonthlyCharts(){
+  const labels = getSlice(ALL_MONTHS);
+  if(charts['ipi_monthly']){
+    charts['ipi_monthly'].data.labels = labels;
+    charts['ipi_monthly'].data.datasets[0].data = getSlice(IPI_GENERAL);
+    charts['ipi_monthly'].data.datasets[1].data = Array(labels.length).fill(100);
+    charts['ipi_monthly'].update('active');
+  }
+  if(charts['litio_tons']){
+    charts['litio_tons'].data.labels = labels;
+    charts['litio_tons'].data.datasets[0].data = getSlice(LITIO_TONS);
+    charts['litio_tons'].update('active');
+  }
+  if(charts['petrol_gas']){
+    charts['petrol_gas'].data.labels = labels;
+    charts['petrol_gas'].data.datasets[0].data = getSlice(PETROLEO);
+    charts['petrol_gas'].data.datasets[1].data = getSlice(GAS);
+    charts['petrol_gas'].data.datasets[2].data = Array(labels.length).fill(100);
+    charts['petrol_gas'].update('active');
+  }
+  if(charts['metalif']){
+    charts['metalif'].data.labels = labels;
+    charts['metalif'].data.datasets[0].data = getSlice(METALIFEROS);
+    charts['metalif'].data.datasets[1].data = getSlice(PLATA_ORO);
+    charts['metalif'].data.datasets[2].data = Array(labels.length).fill(100);
+    charts['metalif'].update('active');
+  }
+}
+
+/* ============================================================
+   TAB SWITCHING
+============================================================ */
+function showTab(idx){
+  document.querySelectorAll('.tab-panel').forEach((p,i)=>p.classList.toggle('active',i===idx));
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===idx));
+  if(idx===0 && !tabInited[0]) initTab0();
+  if(idx===1 && !tabInited[1]) initTab1();
+  if(idx===2 && !tabInited[2]) initTab2();
+  if(idx===3 && !tabInited[3]) initTab3();
+  if(idx===4 && !tabInited[4]) initMapTab();
+  if(idx===4 && window._leafletMap){ setTimeout(()=>window._leafletMap.invalidateSize(),100); }
+}
+
+/* ============================================================
+   TAB 0 — VISTA GENERAL
+============================================================ */
+function initTab0(){
+  tabInited[0]=true;
+
+  // Annual chart
+  const ctxA = document.getElementById('chart-anual').getContext('2d');
+  const anualColors = IPI_ANUAL_VALS.map(v => v===87.9 ? '#c53030' : '#1e3a5f');
+  charts['anual'] = new Chart(ctxA,{
+    type:'bar',
+    data:{
+      labels: IPI_ANUAL_YEARS,
+      datasets:[{
+        label:'IPI Minero',
+        data: IPI_ANUAL_VALS,
+        backgroundColor: IPI_ANUAL_VALS.map(v=> v===87.9 ? 'rgba(197,48,48,0.7)' : 'rgba(30,58,95,0.75)'),
+        borderColor: IPI_ANUAL_VALS.map(v=> v===87.9 ? '#c53030' : '#1e3a5f'),
+        borderWidth: 1.5,
+        borderRadius: 4,
+      },{
+        label:'Base 2016',
+        data: Array(IPI_ANUAL_YEARS.length).fill(100),
+        type:'line',
+        borderColor:'rgba(160,174,192,0.6)',
+        borderDash:[4,4],
+        borderWidth:1.5,
+        pointRadius:0,
+        fill:false,
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{...tooltipConfig, callbacks:{
+          label:ctx=> ctx.dataset.label==='Base 2016' ? 'Base: 100' : `IPI: ${ctx.parsed.y}`,
+          afterLabel:ctx=> ctx.dataset.label!=='Base 2016' && ctx.dataIndex===3 ? '(pandemia COVID-19)' : ''
+        }}
+      },
+      scales:{
+        x:{grid:{display:false},ticks:{color:'#4a5568',font:{size:11}}},
+        y:{grid:{color:'#f0f3f7'},ticks:{color:'#4a5568',font:{size:11}},min:60}
+      }
+    }
+  });
+
+  // Subsectores horizontal bar
+  const ctxS = document.getElementById('chart-subsectores').getContext('2d');
+  charts['subsectores'] = new Chart(ctxS,{
+    type:'bar',
+    data:{
+      labels:['Petróleo','Gas Natural','Plata/Oro','Metalif.','Litio'],
+      datasets:[{
+        label:'Índice Ene 2026',
+        data:[173.7,108.9,121.8,49.8,396.5],
+        backgroundColor:['rgba(183,121,31,0.8)','rgba(183,121,31,0.45)','rgba(85,60,154,0.75)','rgba(85,60,154,0.45)','rgba(44,122,123,0.8)'],
+        borderColor:['#b7791f','#b7791f','#553c9a','#553c9a','#2c7a7b'],
+        borderWidth:1.5,
+        borderRadius:4,
+      }]
+    },
+    options:{
+      indexAxis:'y',
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{...tooltipConfig}
+      },
+      scales:{
+        x:{grid:{color:'#f0f3f7'},ticks:{color:'#4a5568',font:{size:11}}},
+        y:{grid:{display:false},ticks:{color:'#4a5568',font:{size:11,weight:'500'}}}
+      }
+    }
+  });
+
+  // IPI Monthly trend
+  const ctxM = document.getElementById('chart-ipi-monthly').getContext('2d');
+  const labelsM = getSlice(ALL_MONTHS);
+  const grad = makeGradient(ctxM,'#1e3a5f',0.15);
+  charts['ipi_monthly'] = new Chart(ctxM,{
+    type:'line',
+    data:{
+      labels: labelsM,
+      datasets:[{
+        label:'IPI General',
+        data: getSlice(IPI_GENERAL),
+        borderColor:'#1e3a5f',
+        borderWidth:2.5,
+        backgroundColor: grad,
+        fill:true,
+        tension:0.35,
+        pointRadius:3,
+        pointBackgroundColor:'#1e3a5f',
+        pointHoverRadius:5,
+      },refLine(labelsM.length)]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{...tooltipConfig, callbacks:{
+          label:ctx=>{
+            if(ctx.datasetIndex===1) return 'Base: 100';
+            const i = getSlice(ALL_MONTHS).indexOf(ctx.label);
+            const fullI = ALL_MONTHS.indexOf(ctx.label);
+            const vr = fullI>=0 ? IPI_VAR[fullI] : null;
+            return `IPI: ${ctx.parsed.y}${vr!=null?' | var i.a.: +'+vr+'%':''}`;
+          }
+        }}
+      },
+      scales:{
+        x:{grid:{display:false},ticks:{color:'#4a5568',maxTicksLimit:12,font:{size:11}}},
+        y:{grid:{color:'#f0f3f7'},ticks:{color:'#4a5568',font:{size:11}},min:80}
+      }
+    }
+  });
+}
+
+/* ============================================================
+   TAB 1 — LITIO
+============================================================ */
+function initTab1(){
+  tabInited[1]=true;
+  const ctxL = document.getElementById('chart-litio').getContext('2d');
+  const labelsL = getSlice(ALL_MONTHS);
+  const gradL = makeGradient(ctxL,'#2c7a7b',0.20);
+  const dataL = getSlice(LITIO_TONS);
+
+  // Build point colors: highlight peak (Dic 2025, index 22)
+  const fullLen = ALL_MONTHS.length;
+  const sliceStart = currentPeriod===0 ? 0 : fullLen - currentPeriod;
+  const peakFullIdx = 22; // Dic 2025
+
+  charts['litio_tons'] = new Chart(ctxL,{
+    type:'line',
+    data:{
+      labels: labelsL,
+      datasets:[{
+        label:'Producción (t)',
+        data: dataL,
+        borderColor:'#2c7a7b',
+        borderWidth:2.5,
+        backgroundColor: gradL,
+        fill:true,
+        tension:0.35,
+        pointRadius: dataL.map((_,i)=>{
+          const fullIdx = sliceStart+i;
+          return fullIdx===peakFullIdx ? 7 : 3;
+        }),
+        pointBackgroundColor: dataL.map((_,i)=>{
+          const fullIdx = sliceStart+i;
+          return fullIdx===peakFullIdx ? '#276749' : '#2c7a7b';
+        }),
+        pointHoverRadius:6,
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{...tooltipConfig, callbacks:{
+          label:ctx=>{
+            const val = ctx.parsed.y.toLocaleString('es-AR');
+            const sliceStart2 = currentPeriod===0?0:ALL_MONTHS.length-Math.min(currentPeriod,ALL_MONTHS.length);
+            const fi = sliceStart2+ctx.dataIndex;
+            if(fi===peakFullIdx) return `Toneladas: ${val} ★ RÉCORD HISTÓRICO`;
+            return `Toneladas: ${val}`;
+          }
+        }}
+      },
+      scales:{
+        x:{grid:{display:false},ticks:{color:'#4a5568',maxTicksLimit:12,font:{size:11}}},
+        y:{grid:{color:'#f0f3f7'},ticks:{color:'#4a5568',font:{size:11},callback:v=>v.toLocaleString('es-AR')},min:0}
+      }
+    }
+  });
+}
+
+/* ============================================================
+   TAB 2 — PETRÓLEO Y GAS
+============================================================ */
+function initTab2(){
+  tabInited[2]=true;
+  const ctxP = document.getElementById('chart-petrol').getContext('2d');
+  const labelsP = getSlice(ALL_MONTHS);
+  charts['petrol_gas'] = new Chart(ctxP,{
+    type:'line',
+    data:{
+      labels: labelsP,
+      datasets:[{
+        label:'Petróleo',
+        data: getSlice(PETROLEO),
+        borderColor:'#b7791f',
+        borderWidth:2.5,
+        backgroundColor:'rgba(183,121,31,0.08)',
+        fill:false,
+        tension:0.3,
+        pointRadius:3,
+        pointHoverRadius:5,
+      },{
+        label:'Gas Natural',
+        data: getSlice(GAS),
+        borderColor:'#2b6cb0',
+        borderDash:[6,3],
+        borderWidth:2.5,
+        backgroundColor:'transparent',
+        fill:false,
+        tension:0.3,
+        pointRadius:3,
+        pointHoverRadius:5,
+      },refLine(labelsP.length)]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{
+          display:true,
+          labels:{color:'#4a5568',padding:16,font:{size:12},boxWidth:14}
+        },
+        tooltip:{...tooltipConfig}
+      },
+      scales:{
+        x:{grid:{display:false},ticks:{color:'#4a5568',maxTicksLimit:12,font:{size:11}}},
+        y:{grid:{color:'#f0f3f7'},ticks:{color:'#4a5568',font:{size:11}},min:80}
+      }
+    }
+  });
+}
+
+/* ============================================================
+   TAB 3 — METALIFEROS
+============================================================ */
+function initTab3(){
+  tabInited[3]=true;
+  const ctxMet = document.getElementById('chart-metalif').getContext('2d');
+  const labelsmet = getSlice(ALL_MONTHS);
+  charts['metalif'] = new Chart(ctxMet,{
+    type:'line',
+    data:{
+      labels: labelsmet,
+      datasets:[{
+        label:'Metalíferos',
+        data: getSlice(METALIFEROS),
+        borderColor:'#553c9a',
+        borderWidth:2.5,
+        backgroundColor:'rgba(85,60,154,0.07)',
+        fill:false,
+        tension:0.3,
+        pointRadius:3,
+        pointHoverRadius:5,
+      },{
+        label:'Plata y Oro',
+        data: getSlice(PLATA_ORO),
+        borderColor:'#805ad5',
+        borderDash:[6,3],
+        borderWidth:2.5,
+        backgroundColor:'transparent',
+        fill:false,
+        tension:0.3,
+        pointRadius:3,
+        pointHoverRadius:5,
+      },refLine(labelsmet.length)]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{
+          display:true,
+          labels:{color:'#4a5568',padding:16,font:{size:12},boxWidth:14}
+        },
+        tooltip:{...tooltipConfig}
+      },
+      scales:{
+        x:{grid:{display:false},ticks:{color:'#4a5568',maxTicksLimit:12,font:{size:11}}},
+        y:{grid:{color:'#f0f3f7'},ticks:{color:'#4a5568',font:{size:11}},min:30}
+      }
+    }
+  });
+}
+
+/* ============================================================
+   TAB 4 — MAPA
+============================================================ */
+let markerLayer = null;
+let markerMap = {}; // id -> L.circleMarker
+let activeMineral = 'Todos';
+let activeStatuses = {produccion:true, factibilidad:true, exploracion:true};
+let activeItemId = null;
+
+function mineralFilterMatch(mineral){
+  if(activeMineral==='Todos') return true;
+  if(activeMineral==='Litio') return mineral.includes('Litio');
+  if(activeMineral==='Oro') return mineral.includes('Oro');
+  if(activeMineral==='Cobre') return mineral.includes('Cobre');
+  if(activeMineral==='Plata') return mineral.includes('Plata');
+  if(activeMineral==='Otros') return !mineral.includes('Litio')&&!mineral.includes('Oro')&&!mineral.includes('Cobre')&&!mineral.includes('Plata');
+  return true;
+}
+
+function projectVisible(p){
+  return mineralFilterMatch(p.mineral) && activeStatuses[p.status];
+}
+
+function statusLabel(s){
+  if(s==='produccion') return 'Producción';
+  if(s==='factibilidad') return 'Factibilidad';
+  return 'Exploración';
+}
+
+function buildPopup(p){
+  const col = mineralColor(p.mineral);
+  const statusBg = p.status==='produccion'?'var(--green-dim)':p.status==='factibilidad'?'var(--amber-dim)':'var(--blue-light)';
+  const statusCol = p.status==='produccion'?'var(--green)':p.status==='factibilidad'?'var(--amber)':'var(--blue)';
+  const invHtml = p.inv ? `<div class="popup-inv">Inversión: <strong>${p.inv}</strong></div>` : '';
+  return `
+    <div class="popup-name">${p.name}</div>
+    <div class="popup-empresa">${p.empresa || '—'}</div>
+    <div class="popup-badges">
+      <span class="popup-badge" style="background:${col}22;color:${col}">${p.mineral}</span>
+      <span class="popup-badge" style="background:${statusBg};color:${statusCol}">${statusLabel(p.status)}</span>
+      <span class="popup-badge" style="background:var(--navy-dim);color:var(--navy)">${p.provincia}</span>
+    </div>
+    ${invHtml}
+    <div class="popup-det">${p.det}</div>
+  `;
+}
+
+function rebuildMarkers(){
+  markerLayer.clearLayers();
+  markerMap = {};
+  PROJECTS.forEach(p=>{
+    const visible = projectVisible(p);
+    if(!visible) return;
+    const color = mineralColor(p.mineral);
+    const radius = p.status==='produccion'?10:p.status==='factibilidad'?8:6;
+    const opacity = p.status==='produccion'?1.0:p.status==='factibilidad'?0.85:0.70;
+    const m = L.circleMarker([p.lat,p.lng],{
+      radius,
+      fillColor: color,
+      color: '#fff',
+      weight: 2,
+      opacity: opacity,
+      fillOpacity: opacity,
+    });
+    m.bindPopup(buildPopup(p),{maxWidth:280});
+    m.on('click',()=>{
+      highlightItem(p.id);
+    });
+    markerLayer.addLayer(m);
+    markerMap[p.id] = m;
+  });
+  updateCount();
+}
+
+function updateCount(){
+  const visible = PROJECTS.filter(projectVisible).length;
+  document.getElementById('filter-count').textContent = `Mostrando ${visible} de ${PROJECTS.length} proyectos`;
+}
+
+function highlightItem(id){
+  document.querySelectorAll('.proj-item').forEach(el=>{
+    el.classList.toggle('active-item', +el.dataset.id===id);
+  });
+  activeItemId = id;
+  // scroll item into view
+  const el = document.querySelector(`.proj-item[data-id="${id}"]`);
+  if(el) el.scrollIntoView({block:'nearest',behavior:'smooth'});
+}
+
+function buildProjList(){
+  const list = document.getElementById('proj-list');
+  list.innerHTML = '';
+  PROJECTS.forEach(p=>{
+    const col = mineralColor(p.mineral);
+    const badgeClass = p.status==='produccion'?'prod':p.status==='factibilidad'?'fact':'expl';
+    const badgeText = p.status==='produccion'?'PROD':p.status==='factibilidad'?'FACT':'EXPL';
+    const div = document.createElement('div');
+    div.className = 'proj-item';
+    div.dataset.id = p.id;
+    div.innerHTML = `
+      <span class="proj-dot" style="background:${col}"></span>
+      <div class="proj-info">
+        <span class="proj-name">${p.name}</span>
+        <span class="proj-loc">${p.empresa?p.empresa+' · ':''}${p.provincia}</span>
+      </div>
+      <span class="proj-badge ${badgeClass}">${badgeText}</span>
+    `;
+    div.addEventListener('click',()=>{
+      const m = markerMap[p.id];
+      if(m){
+        window._leafletMap.flyTo([p.lat,p.lng],8,{duration:0.8});
+        setTimeout(()=>m.openPopup(),900);
+      }
+      highlightItem(p.id);
+    });
+    list.appendChild(div);
+  });
+}
+
+function applyFiltersToList(){
+  document.querySelectorAll('.proj-item').forEach(el=>{
+    const id = +el.dataset.id;
+    const p = PROJECTS.find(x=>x.id===id);
+    el.style.display = p && projectVisible(p) ? '' : 'none';
+  });
+  updateCount();
+}
+
+function initMapTab(){
+  tabInited[4]=true;
+
+  const map = L.map('leaflet-map',{center:[-38,-66],zoom:4,zoomControl:true});
+  window._leafletMap = map;
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
+    attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains:'abcd',
+    maxZoom:19
+  }).addTo(map);
+
+  markerLayer = L.layerGroup().addTo(map);
+  rebuildMarkers();
+  buildProjList();
+
+  setTimeout(()=>map.invalidateSize(),100);
+
+  // Mineral filter
+  document.querySelectorAll('#filter-mineral .filter-pill').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('#filter-mineral .filter-pill').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      activeMineral = btn.dataset.mineral;
+      rebuildMarkers();
+      applyFiltersToList();
+    });
+  });
+
+  // Status filter
+  document.querySelectorAll('#filter-status .filter-pill').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const s = btn.dataset.status;
+      activeStatuses[s] = !activeStatuses[s];
+      btn.classList.toggle('active', activeStatuses[s]);
+      rebuildMarkers();
+      applyFiltersToList();
+    });
+  });
+}
+
+/* ============================================================
+   INIT
+============================================================ */
+document.addEventListener('DOMContentLoaded',()=>{
+  initTab0();
+});
+</script>
+</body>
+</html>
