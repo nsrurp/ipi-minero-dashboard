@@ -1,7 +1,7 @@
 /* ============================================================
    MACH — IPI Minero Argentina · DATOS
    Este archivo es el ÚNICO que se actualiza mensualmente.
-   Generado: 2026-09-18 · Último dato INDEC: Julio 2026
+   Generado: 2026-09-18 · Último dato INDEC: Julio 2026 · Novedades: Junio–Agosto 2026
 ============================================================ */
 window.MACH_DATA = {
   ultimoDato: "Julio 2026",
@@ -43,7 +43,7 @@ window.MACH_DATA = {
     tab2: [
       {label:"Petróleo Jul 2026", value:"180.7", bar:"amber", sub:"Vaca Muerta — nuevo pico histórico", badge:{cls:"green",text:"▲ +12.7% i.a."}},
       {label:"Gas Jul 2026", value:"131.0", bar:"blue", sub:"Comportamiento estacional", badge:{cls:"blue",text:"Pico invernal"}},
-      {label:"Precio Oro (ref.)", value:"USD 4.587", small:true, bar:"navy", sub:"por onza troy (May 2026) — impacto exportaciones", badge:{cls:"green",text:"▲ +38.6% i.a."}}
+      {label:"Precio Oro (ref.)", value:"USD 4.065", small:true, bar:"navy", sub:"por onza troy (Jul 2026) — impacto exportaciones", badge:{cls:"green",text:"▲ +22% i.a."}}
     ],
     tab3: [
       {label:"Metalíferos Jul 2026", value:"52.5", bar:"purple", sub:"Operando bajo base 2016 = 100", badge:{cls:"red",text:"▼ -12.4% i.a."}},
@@ -52,39 +52,51 @@ window.MACH_DATA = {
   },
 
   precios: [
-    {mineral:"Oro", color:"amber", val:"USD 4.587", unit:"por onza troy — May 2026", badgeCls:"green", badgeText:"▲ +38.6% i.a."},
-    {mineral:"Plata", color:"text3", val:"USD 78.0", unit:"por onza troy — May 2026", badgeCls:"green", badgeText:"▲ +138.1% i.a."},
-    {mineral:"Cobre", color:"copper", val:"USD 13.543", unit:"por tonelada — May 2026", badgeCls:"green", badgeText:"▲ +42.1% i.a."},
-    {mineral:"Litio Carbonato", color:"teal", val:"USD 23.816", unit:"por tonelada CIF Asia — May 2026", badgeCls:"green", badgeText:"▲ +170.6% i.a."}
+    {mineral:"Oro", color:"amber", val:"USD 4.065", unit:"por onza troy — Jul 2026", badgeCls:"green", badgeText:"▲ +22% i.a."},
+    {mineral:"Plata", color:"text3", val:"USD 56.8", unit:"por onza troy — Jul 2026", badgeCls:"green", badgeText:"▲ +55% i.a."},
+    {mineral:"Cobre", color:"copper", val:"USD 13.500", unit:"por tonelada — Jul 2026", badgeCls:"green", badgeText:"▲ +38% i.a."},
+    {mineral:"Litio Carbonato", color:"teal", val:"USD 19.625", unit:"por tonelada CIF Asia — Jul 2026", badgeCls:"green", badgeText:"▲ +132% i.a."}
   ],
 
   notas: {
     litio: '<strong>Argentina — 2.° productor mundial de litio.</strong> El índice IPI litio pasó de 177 (feb 2024) a 407 (jul 2026), con pico histórico de 540 en abr–may 2026. La producción de julio (9.432 t, +15.9% i.a.) acumula 11 meses consecutivos por encima de las 9.000 toneladas. Siete proyectos concentran la producción: Fénix y Olaroz (Rio Tinto), Cauchari (Lithium Argentina/Ganfeng), Centenario-Ratones (Eramet), Sal de Oro (Posco), Mariana (Ganfeng) y 3Q (Zijin), consolidando al país en el "Triángulo del Litio" junto a Chile y Bolivia.',
     petroleo: '<strong>Petróleo en zona de máximos históricos</strong> impulsado por el desarrollo sostenido de <strong>Vaca Muerta</strong>: nuevo pico de 180.7 en julio 2026 (+12.7% i.a.). El índice supera en un <strong>81%</strong> la base 2016. Gas con comportamiento estacional marcado: picos en invierno (may–ago), oscilando entre 98 y 133 puntos. La integración energética, los gasoductos de exportación y el proyecto Argentina LNG son factores clave para el crecimiento sostenido del sector.',
-    metaliferos: 'El sector metalífero general opera por <strong>debajo de la base 2016</strong> (52.5 en jul 2026, -12.4% i.a.), reflejando la madurez de yacimientos existentes. Plata y Oro retrocedió a 132.9 en julio (-9.9% i.a.) tras los picos de may–jun 2026 (152.5), en un contexto de precios récord del oro (USD 4.587/oz) y la plata (USD 78/oz). Existe potencial de crecimiento significativo ante nuevos proyectos habilitados bajo el <strong>Régimen de Incentivo a las Grandes Inversiones (RIGI)</strong>, incluyendo Josemaría, Filo del Sol, Los Azules y MARA.'
+    metaliferos: 'El sector metalífero general opera por <strong>debajo de la base 2016</strong> (52.5 en jul 2026, -12.4% i.a.), reflejando la madurez de yacimientos existentes. Plata y Oro retrocedió a 132.9 en julio (-9.9% i.a.) tras los picos de may–jun 2026 (152.5), en un contexto de precios internacionales elevados del oro (USD 4.065/oz) y la plata (USD 56,8/oz en julio). Existe potencial de crecimiento significativo ante nuevos proyectos habilitados bajo el <strong>Régimen de Incentivo a las Grandes Inversiones (RIGI)</strong>, incluyendo Josemaría, Filo del Sol, Los Azules y MARA.'
   },
 
   ticker: [
+    "LITHIUM ARGENTINA Y GANFENG: SOCIEDAD POR HASTA 150.000 T/AÑO LCE EN SALTA",
     "IPI MINERO JULIO 2026: 146.0 (+3,7% I.A.)",
     "PETRÓLEO: NUEVO PICO HISTÓRICO — 180.7 EN JULIO (+12,7% I.A.)",
+    "VICUÑA ANTICIPA USD 250M PARA INFRAESTRUCTURA EN SAN JUAN",
+    "RIGI AMPLIADO A INFRAESTRUCTURA FERROVIARIA — DECRETO 748/2026",
+    "GLENCORE ADELANTA EL REINICIO DE ALUMBRERA AL 2S 2027",
     "LITIO: 9.432 T EN JULIO — 11 MESES SOBRE 9.000 T",
-    "RIGI: TRES QUEBRADAS (3Q) APROBADO — LITIO · CATAMARCA",
-    "EXPORTACIONES MINERAS 5M 2026: USD 3.934M — RÉCORD",
-    "SE OFICIALIZÓ EL RIMI — RÉGIMEN PARA INVERSIONES MEDIANAS",
-    "AISA: NUEVO RIGI POR USD 1.500M PARA GUALCAMAYO",
-    "GALAN LITHIUM: PRIMERA PRODUCCIÓN EN HOMBRE MUERTO WEST"
+    "LITIO CIF ASIA: USD 19.625/T EN JULIO (+132% I.A.)"
   ],
 
   novedades: {
-    rango: "MAYO — JULIO 2026",
+    rango: "JUNIO — AGOSTO 2026",
     destacada: {
-      d:"14", m:"JUL 2026", cats:[{label:"DESTACADA",var:"gold"},{label:"LITIO",var:"teal"}],
-      titulo:"Tres Quebradas (3Q) ingresó al RIGI",
-      cuerpo:"El Gobierno nacional aprobó el ingreso al Régimen de Incentivo para Grandes Inversiones del proyecto de litio 3Q, operado por Zijin Mining a través de LIEX en Fiambalá, Catamarca. La aprobación se suma a las de Cauchari-Olaroz, Sal de Oro y PSJ Cobre Mendocino, y consolida al RIGI como el canal de inversión dominante del litio argentino — el mismo trimestre en que el IPI litio marcó máximos históricos.",
-      url:""
+      d:"24", m:"AGO 2026", cats:[{label:"DESTACADA",var:"gold"},{label:"LITIO",var:"teal"}],
+      titulo:"Lithium Argentina y Ganfeng consolidan una plataforma de 150.000 t/año en Salta",
+      cuerpo:"Ambas compañías firmaron los acuerdos definitivos para crear la sociedad que unifica Pozuelos-Pastos Grandes, Pastos Grandes y Sal de la Puna como una única plataforma de producción, con capacidad prevista de hasta 150.000 t/año de LCE en tres etapas. Ganfeng tendrá el 67% y será el operador; Lithium Argentina retiene el 33% y recibe además USD 180M vía un bono convertible. La inversión acumulada en los activos ya supera los USD 1.800M — la mayor consolidación del litio salteño hasta la fecha.",
+      url:"https://www.mineriaydesarrollo.com/noticias/2026/08/24/26119-lithium-argentina-y-ganfeng-formalizan-la-sociedad-para-desarrollar-ppg-en-salta-con-una-inversion-de-us180-millones"
     },
     meses: [
+      { titulo:"Agosto 2026", items:[
+        {d:"20",m:"AGO 26",cat:"Infra y Energía",catvar:"amber",titulo:"Belgrano Cargas: licitación por 50 años",cuerpo:"El Gobierno lanzó la concesión de las líneas Belgrano, San Martín y Urquiza — 7.594 km en 16 provincias — bajo esquema open access, con inversión privada estimada en USD 1.000M y acceso al RIGI. Las ofertas vencen el 11 de noviembre. Infraestructura clave para la logística minera del NOA.",url:"https://www.mineriaydesarrollo.com/noticias/2026/08/20/26035-expectativa-minera-el-gobierno-argentino-licitara-por-50-anos-la-linea-del-belgrano-cargas"},
+        {d:"18",m:"AGO 26",cat:"Normativa",catvar:"blue",titulo:"El RIGI se amplía a infraestructura ferroviaria",cuerpo:"El Decreto 748/2026 incorpora al régimen la renovación, duplicación y electrificación de vías, rehabilitación de ramales y nodos logísticos, excluyendo el simple mantenimiento. Complementa la privatización del Belgrano Cargas.",url:"https://www.mineriaydesarrollo.com/noticias/2026/08/18/25993-el-gobierno-argentino-amplio-el-rigi-para-incluir-obras-de-renovacion-de-infraestructura-ferroviaria"},
+        {d:"05",m:"AGO 26",cat:"Cobre",catvar:"copper",titulo:"Vicuña anticipa USD 250M a San Juan",cuerpo:"BHP y Lundin firmaron con la Provincia un acuerdo de largo plazo: aporte anticipado de USD 250M para infraestructura antes de fin de 2026, regalías estabilizadas en 3% durante toda la vida útil y una contribución adicional del 1,5% de ventas brutas desde el sexto año.",url:"https://www.mineriaydesarrollo.com/noticias/2026/08/05/25792-vicuna-anticipara-us250-millones-para-infraestructura-en-san-juan-antes-de-iniciar-la-produccion"},
+        {d:"05",m:"AGO 26",cat:"Cobre",catvar:"copper",titulo:"Glencore adelanta el reinicio de Alumbrera",cuerpo:"La primera producción se prevé ahora para el segundo semestre de 2027, un año antes de lo estimado. La reactivación se apoya en la infraestructura existente y habilita el desarrollo de MARA, con CAPEX estimado de USD 3.500–4.500M.",url:"https://www.mineriaydesarrollo.com/noticias/2026/08/05/25768-glencore-adelanta-un-ano-el-reinicio-de-produccion-en-alumbrera-catamarca"},
+        {d:"05",m:"AGO 26",cat:"Litio",catvar:"teal",titulo:"Cauchari-Olaroz asegura USD 220M de financiamiento",cuerpo:"Minera Exar cerró dos líneas de crédito (USD 50M + USD 170M, tasa inferior al 5%) con garantía de Ganfeng, para avanzar con la Etapa 2 aprobada bajo el RIGI: +45.000 t/año hasta un total de ~85.000 t/año de LCE.",url:"https://www.mineriaydesarrollo.com/noticias/2026/08/05/25777-cauchari-olaroz-asegura-financiamiento-por-us220-millones-para-avanzar-con-su-expansion-en-jujuy"},
+        {d:"02",m:"AGO 26",cat:"Litio",catvar:"teal",titulo:"Galan completó la puesta en marcha de HMW",cuerpo:"Hombre Muerto West (Catamarca) ya produce concentrado de cloruro de litio con la planta de nanofiltración validada. Objetivo: 4.000 t/año LCE antes de fin de 2026 y primeras ventas comerciales en el 2S, con expansión a 5.200 t/año en marcha.",url:"https://saltamining.com/contenido/8726/galan-lithium-avanza-hacia-las-primeras-ventas-de-litio-desde-hombre-muerto-west"},
+        {d:"14",m:"AGO 26",cat:"Normativa",catvar:"blue",titulo:"Tierras raras: avanza su incorporación al Código de Minería",cuerpo:"El proyecto 1521-D-2025 propone incluir los 17 elementos de tierras raras como minerales de primera categoría, con respaldo del COFEMIN y la Secretaría de Minería. SEGEMAR identifica 190.395 t de recursos, principalmente en Salta, Jujuy y San Luis.",url:"https://www.mineriaydesarrollo.com/noticias/2026/08/14/25945-el-proyecto-para-incorporar-tierras-raras-al-codigo-minero-suma-respaldo-en-el-congreso-argentino"},
+        {d:"20",m:"AGO 26",cat:"Oro y Plata",catvar:"gold",titulo:"Río Negro suspendió Calcatreu",cuerpo:"La Provincia paralizó el proyecto de oro y plata de Patagonia Gold por incumplimientos del esquema 80/20 de contratación de mano de obra local. La suspensión rige hasta que la empresa regularice los compromisos laborales y de capacitación.",url:"https://www.mineriaydesarrollo.com/noticias/2026/08/20/26059-rio-negro-suspendio-las-actividades-en-calcatreu-por-incumplimientos-en-la-contratacion-de-mano-de-obra-local"},
+        {d:"14",m:"AGO 26",cat:"Internacional",catvar:"purple",titulo:"CATL: la parálisis de Jianxiawo tensiona la oferta global",cuerpo:"La mina de litio en Jiangxi (≈4% del suministro mundial) sigue detenida a la espera de la aprobación ambiental. Benchmark estima en riesgo unas 60.000 t de LCE: podría borrar el superávit previsto para 2026 y llevar el mercado a déficit.",url:""}
+      ]},
       { titulo:"Julio 2026", items:[
+        {d:"14",m:"JUL 26",cat:"Litio",catvar:"teal",titulo:"Tres Quebradas (3Q) ingresó al RIGI",cuerpo:"El Gobierno nacional aprobó el ingreso al RIGI del proyecto de litio 3Q, operado por Zijin Mining a través de LIEX en Fiambalá, Catamarca. Se suma a Cauchari-Olaroz, Sal de Oro y PSJ Cobre Mendocino, consolidando al régimen como el canal de inversión dominante del litio argentino.",url:""},
         {d:"15",m:"JUL 26",cat:"Cobre",catvar:"copper",titulo:"First Quantum evalúa vender participación en Taca Taca",cuerpo:"La compañía analiza vender una participación minoritaria del proyecto de cobre en Salta para financiar su desarrollo. En paralelo, la IFC inició la evaluación ambiental y social del proyecto.",url:""},
         {d:"16",m:"JUL 26",cat:"Cobre",catvar:"copper",titulo:"NGEx confirma alta ley en Lunahuasi",cuerpo:"Nuevos resultados de perforación en San Juan ratifican altas concentraciones de cobre, oro y plata en el sistema de pórfido del Distrito Vicuña.",url:""},
         {d:"13",m:"JUL 26",cat:"Cobre",catvar:"copper",titulo:"Rio Tinto invierte USD 15M en Filo Sur",cuerpo:"Rio Tinto financiará la exploración de Mogotes Metals en el Distrito Vicuña (San Juan), donde se reportó una nueva intersección de alta ley de Cu-Au-Ag-Mo.",url:""},
@@ -103,15 +115,6 @@ window.MACH_DATA = {
         {d:"26",m:"JUN 26",cat:"Litio",catvar:"teal",titulo:"Udine explora litio en La Rioja",cuerpo:"Campaña de perforación exploratoria en el proyecto Arauco, en el Salar de Pipanaco, para evaluar su potencial.",url:""},
         {d:"17",m:"JUN 26",cat:"Cobre",catvar:"copper",titulo:"Vicuña: bypass de Guandacol con empresa riojana",cuerpo:"BHP y Lundin Mining confirmaron la obra vial de ~4 km que desvía el tránsito pesado del casco urbano, parte de los compromisos con el Gobierno de La Rioja.",url:""},
         {d:"26",m:"JUN 26",cat:"Internacional",catvar:"purple",titulo:"Codelco ajustó cifras de producción 2025",cuerpo:"La estatal chilena corrigió los datos de Chuquicamata y Ministro Hales tras detectar irregularidades en la clasificación de mineral.",url:""}
-      ]},
-      { titulo:"Mayo 2026", items:[
-        {d:"28",m:"MAY 26",cat:"Litio",catvar:"teal",titulo:"Galan Lithium: primera producción en Hombre Muerto West",cuerpo:"Primer cloruro de litio producido en Catamarca tras la puesta en marcha de la planta de nanofiltración. Fase 1 apunta a 4.000 t/año LCE con offtake firmado con Authium.",url:"https://www.mining.com/galan-achieves-first-lithium-chloride-production-in-argentina/"},
-        {d:"14",m:"MAY 26",cat:"Litio",catvar:"teal",titulo:"Cauchari-Olaroz Stage 2 con aprobación técnica del RIGI",cuerpo:"Lithium Argentina obtuvo la habilitación técnica para la expansión, que luego se formalizó por Resolución 825/2026 con inversión de USD 1.241M.",url:""},
-        {d:"14",m:"MAY 26",cat:"Cobre",catvar:"copper",titulo:"PSJ Cobre Mendocino ingresó al RIGI",cuerpo:"El proyecto mendocino fue aprobado según anunció el ministro Caputo; la campaña de perforación infill refuerza las expectativas del depósito.",url:""},
-        {d:"11",m:"MAY 26",cat:"Cobre",catvar:"copper",titulo:"Rio Tinto evalúa subir su participación en Los Azules",cuerpo:"La major analiza incrementar su 17,2% en el proyecto de McEwen Copper (San Juan), que sumó a Société Générale a su financiamiento.",url:""},
-        {d:"08",m:"MAY 26",cat:"Normativa",catvar:"blue",titulo:"El Gobierno prepara una ampliación del RIGI",cuerpo:"El ministro Caputo anunció que se trabaja en un esquema informalmente llamado «mini-RIGI» para captar inversiones medianas.",url:""},
-        {d:"19",m:"MAY 26",cat:"Oro y Plata",catvar:"gold",titulo:"Marco legal para Diablillos",cuerpo:"Salta y Catamarca ratificaron el acuerdo interprovincial que consolida el marco institucional del proyecto de plata y oro de AbraSilver.",url:""},
-        {d:"30",m:"ABR 26",cat:"Cobre",catvar:"copper",titulo:"San Juan lidera con USD 33.000M en inversiones",cuerpo:"Ocho proyectos estratégicos concentran la cartera minera provincial, encabezando el ranking nacional de inversión comprometida.",url:""}
       ]}
     ]
   }
