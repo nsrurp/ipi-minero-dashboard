@@ -650,11 +650,12 @@ function initMapTab(){
   const map = L.map('leaflet-map',{center:[-38,-66],zoom:4,zoomControl:true});
   window._leafletMap = map;
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
-    attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    subdomains:'abcd',
+  /* Basemap libre (OSM) con filtro oscuro MACH — CARTO pasó a requerir API key (sep 2026) */
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     maxZoom:19
   }).addTo(map);
+  map.getPane('tilePane').style.filter = 'invert(1) hue-rotate(180deg) brightness(.72) contrast(.95) saturate(.22)';
 
   markerLayer = L.layerGroup().addTo(map);
   rebuildMarkers();
